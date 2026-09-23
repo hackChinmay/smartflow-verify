@@ -1,0 +1,6 @@
+{
+  "name": "SmartFlow Verify",
+  "description": "Intelligent Business Workflow Verification Using Finite State Machines - formal verification, deadlock detection, reachability analysis, and interactive simulation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
