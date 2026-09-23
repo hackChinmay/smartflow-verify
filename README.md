@@ -21,47 +21,61 @@ At its core, **SmartFlow Verify** translates business workflows into formal math
   └─────────────────────────────────────────────────────────┘
 ```
 
-### 1. Finite Automata Formalism ($M = (Q, \Sigma, \delta, q_0, F)$)
-Every workflow created or imported in SmartFlow Verify is represented as a formal **Deterministic / Non-Deterministic Finite State Machine (FSM)**:
-- **States ($Q$)**: The discrete stages of a process (e.g., `Draft`, `Under_Review`, `Approved`, `Rejected`).
-- **Alphabet ($\Sigma$)**: The set of valid discrete input symbols/events triggering state transitions (e.g., `submit_app`, `approve`, `reject`, `timeout`).
-- **Transition Function ($\delta$)**: A mapping $\delta: Q \times \Sigma \rightarrow Q$, augmented with guard predicates $g: \text{Env} \rightarrow \{\text{true}, \text{false}\}$ and effect actions.
-- **Initial State ($q_0 \in Q$)**: The designated root state where computation begins.
-- **Terminal States ($F \subseteq Q$)**: The set of final accepting ($F_{success}$) and rejecting ($F_{failure}$) states.
+### 1. Finite Automata Formalism `M = (Q, Σ, δ, q₀, F)`
+Every workflow created or imported in SmartFlow Verify is modeled as a formal **Deterministic / Non-Deterministic Finite State Machine (FSM)**:
+
+```mermaid
+stateDiagram-v2
+    [*] --> Draft: create_application
+    Draft --> Under_Review: submit [doc_valid == true]
+    Under_Review --> Approved: approve [score >= 700]
+    Under_Review --> Manual_Escalation: review_flagged
+    Under_Review --> Rejected: reject [score < 500]
+    Manual_Escalation --> Approved: supervisor_override
+    Manual_Escalation --> Rejected: terminate
+    Approved --> [*]
+    Rejected --> [*]
+```
+
+- **States (`Q`)**: The discrete stages of a process (e.g., `Draft`, `Under_Review`, `Approved`, `Rejected`).
+- **Alphabet (`Σ`)**: The set of valid discrete input symbols/events triggering state transitions (e.g., `submit`, `approve`, `reject`, `timeout`).
+- **Transition Function (`δ`)**: A mapping `δ: Q × Σ → Q`, augmented with guard predicates `g: Env → {true, false}` and effect actions.
+- **Initial State (`q₀ ∈ Q`)**: The designated root state where computation begins.
+- **Terminal States (`F ⊆ Q`)**: The set of final accepting (`F_success`) and rejecting (`F_failure`) states.
 
 ---
 
 ### 2. Theoretical Verification Checks & Algorithms
 
-| TOC / Formal Concept | Algorithmic Implementation | Theoretical Significance |
+| TOC / Formal Concept | Mathematical Formulation | Theoretical Significance |
 | :--- | :--- | :--- |
-| **Reachability Analysis** | Breadth-First Search (BFS) starting from $q_0$:<br>$Reach(q_0) = \{ q \in Q \mid \exists w \in \Sigma^*, \delta^*(q_0, w) = q \}$ | Detects **Unreachable States / Dead Code** ($Q \setminus Reach(q_0)$) that can never be executed under any valid sequence of events. |
-| **Deadlock Detection** | Invariant check on graph out-degrees:<br>$\forall s \in Reach(q_0), \text{ if } s \notin F \implies \text{deg}^+(s) > 0$ | Identifies non-terminal states with **zero outgoing transitions**, trapping execution indefinitely. |
-| **Livelock & Trap Cycles** | Reverse BFS from terminal states $F$:<br>$Pre^*(F) = \{ q \in Q \mid \exists w \in \Sigma^*, \delta^*(q, w) \in F \}$ | Detects **infinite non-accepting cycles / closed trap components** where execution cycles forever without reaching any final state $F$. |
-| **Determinism (DFA vs NFA)** | Conflict detection on transition relations:<br>$\forall q \in Q, e \in \Sigma$, if $|\delta(q, e)| > 1$ without mutually exclusive guards | Flags **Non-Deterministic choices** (ambiguous state transitions) and enforces deterministic execution. |
-| **Counter-Example Trace Generation** | Shortest path reconstruction via predecessor map $parentMap[v]$ | When a formal violation is detected, constructs the exact word $w = e_1 e_2 \dots e_k \in \Sigma^*$ that triggers the defect. |
-| **State Transition Matrix** | 2D matrix mapping $\delta: Q \times \Sigma \rightarrow Q \cup \{\emptyset\}$ | Tabular algebraic representation of the state transition function. |
+| **Reachability Analysis** | `Reach(q₀) = { q ∈ Q ∣ ∃ w ∈ Σ*, δ*(q₀, w) = q }` (Computed via BFS traversal) | Detects **Unreachable States / Dead Code** (`Q \ Reach(q₀)`) that can never be executed under any valid sequence of events. |
+| **Deadlock Detection** | `∀ s ∈ Reach(q₀): (s ∉ F) ⟹ (deg⁺(s) > 0)` | Identifies non-terminal states with **zero outgoing transitions**, trapping execution indefinitely. |
+| **Livelock & Trap Cycles** | `Pre*(F) = { q ∈ Q ∣ ∃ w ∈ Σ*, δ*(q, w) ∈ F }` (Computed via Reverse BFS) | Detects **infinite non-accepting cycles / closed trap components** where execution cycles forever without ever reaching any final state `F`. |
+| **Determinism (DFA vs NFA)** | `∀ q ∈ Q, e ∈ Σ: count(δ(q, e)) ≤ 1` (or mutually exclusive guards) | Flags **Non-Deterministic choices** (ambiguous state transitions) and enforces deterministic execution. |
+| **Counter-Example Trace** | Shortest path reconstruction `w = e₁ e₂ ... eₖ ∈ Σ*` via `parentMap[v]` | When a formal violation is detected, synthesizes the exact shortest event trace triggering the defect. |
+| **State Transition Matrix** | 2D matrix mapping `δ: Q × Σ → Q ∪ {∅}` | Tabular algebraic representation of the state transition function. |
 
 ---
 
 ### 3. Model Checking & Temporal Logic (CTL / LTL)
 
-SmartFlow Verify incorporates automated model checking for temporal formulas expressed in **Computation Tree Logic (CTL)** and **Linear Temporal Logic (LTL)**:
+SmartFlow Verify incorporates automated model checking for temporal specifications:
 
-- **Safety Properties ($\text{AG } \neg \text{Hazard}$)**: Ensures that system state never enters an invalid or prohibited state in any execution branch.
-- **Liveness Properties ($\text{AG } (\text{Request} \rightarrow \text{AF } \text{Response})$)**: Guarantees that every request eventually receives a valid resolution.
-- **Precedence Constraints ($\text{A}[\neg \text{Disburse } \text{U } \text{KYC\_Verified}]$)**: Formally verifies that prerequisite verification milestones strictly precede critical execution steps.
+- **Safety Properties (`AG ¬Hazard`)**: Ensures that the system never enters an invalid or prohibited state in any execution branch.
+- **Liveness Properties (`AG (Request → AF Response)`)**: Guarantees that every request eventually receives a valid resolution.
+- **Precedence Constraints (`A[¬Disburse U KYC_Verified]`)**: Formally verifies that prerequisite verification milestones strictly precede critical execution steps.
 - **Separation of Duties (SoD)**: Enforces role invariants preventing identical actors from initiating and approving privileged transitions.
 
 ---
 
-## ✨ Features
+## ✨ Key Features
 
 - 🎨 **Visual Canvas & Graph Editor**: Interactive canvas to drag, drop, connect, and configure states, guards, actions, and SLA parameters.
 - 🔍 **Real-Time Verification Engine**: Instant evaluation of deadlocks, unreachable states, livelocks, non-determinism, and invariant compliance.
 - ⚡ **Automated Counter-Example Paths**: Visualizes the step-by-step event trace leading to any detected failure.
 - 🕹️ **Interactive Simulation Dock**: Step through transitions manually or run auto-simulations with variable state tracking and execution history.
-- 📊 **State Matrix View**: Matrix representation of the state transition function $\delta(q, a)$ with density and branching factor metrics.
+- 📊 **State Matrix View**: Matrix representation of the state transition function `δ(q, a)` with density and branching factor metrics.
 - 🤖 **AI Workflow Optimizer & Synthesis**: Powered by Gemini (`@google/genai`) to generate automated repair patches, optimize SLA bottlenecks, and resolve non-deterministic ambiguities.
 - 📑 **Formal Verification Audit Reports**: Export comprehensive verification reports in JSON, Markdown, and print-ready formats.
 
