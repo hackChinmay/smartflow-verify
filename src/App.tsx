@@ -13,6 +13,7 @@ import { AiOptimizerModal } from './components/AiOptimizerModal';
 import { ExportReportModal } from './components/ExportReportModal';
 import { AuthModal } from './components/AuthModal';
 import { CloudWorkflowsModal } from './components/CloudWorkflowsModal';
+import { VerificationAuditView } from './components/VerificationAuditView';
 import { AuthProvider } from './contexts/AuthContext';
 
 function MainApp() {
@@ -194,7 +195,7 @@ function MainApp() {
       <div className="flex-1 flex overflow-hidden relative">
         {/* Left / Center View Area */}
         <div className="flex-1 flex flex-col overflow-hidden relative">
-          {activeTab === 'canvas' || activeTab === 'verification' ? (
+          {activeTab === 'canvas' ? (
             <div className="flex-1 relative">
               <WorkflowCanvas
                 workflow={workflow}
@@ -213,6 +214,18 @@ function MainApp() {
                 simulatingStateId={simulatingStateId}
               />
             </div>
+          ) : activeTab === 'verification' ? (
+            <VerificationAuditView
+              workflow={workflow}
+              verificationResult={verificationResult}
+              onAutoRepair={handleAutoRepair}
+              onSelectState={(id) => {
+                setSelectedStateId(id);
+                setActiveTab('canvas');
+              }}
+              onLoadCounterExample={handleLoadCounterExample}
+              onOpenAiModal={() => setShowAiModal(true)}
+            />
           ) : activeTab === 'matrix' ? (
             <StateMatrixView
               workflow={workflow}
