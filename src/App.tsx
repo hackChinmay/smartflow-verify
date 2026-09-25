@@ -11,8 +11,11 @@ import { StateMatrixView } from './components/StateMatrixView';
 import { InvariantManager } from './components/InvariantManager';
 import { AiOptimizerModal } from './components/AiOptimizerModal';
 import { ExportReportModal } from './components/ExportReportModal';
+import { AuthModal } from './components/AuthModal';
+import { CloudWorkflowsModal } from './components/CloudWorkflowsModal';
+import { AuthProvider } from './contexts/AuthContext';
 
-export default function App() {
+function MainApp() {
   // Current active workflow
   const [workflow, setWorkflow] = useState<FSMWorkflow>(WORKFLOW_TEMPLATES[0]);
 
@@ -31,6 +34,8 @@ export default function App() {
   // Modals
   const [showAiModal, setShowAiModal] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
+  const [showCloudModal, setShowCloudModal] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   // Formal verification run automatically whenever workflow changes
   const verificationResult = useMemo(() => {
@@ -181,6 +186,8 @@ export default function App() {
         onAutoLayout={handleAutoLayout}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
+        onOpenCloudModal={() => setShowCloudModal(true)}
+        onOpenAuthModal={() => setShowAuthModal(true)}
       />
 
       {/* Main Workspace Body */}
@@ -296,6 +303,32 @@ export default function App() {
           onClose={() => setShowExportModal(false)}
         />
       )}
+
+      {/* Cloud Workflows Library Modal */}
+      {showCloudModal && (
+        <CloudWorkflowsModal
+          isOpen={showCloudModal}
+          onClose={() => setShowCloudModal(false)}
+          currentWorkflow={workflow}
+          onLoadWorkflow={handleSelectWorkflow}
+        />
+      )}
+
+      {/* Auth Profile Modal */}
+      {showAuthModal && (
+        <AuthModal
+          isOpen={showAuthModal}
+          onClose={() => setShowAuthModal(false)}
+        />
+      )}
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <MainApp />
+    </AuthProvider>
   );
 }
