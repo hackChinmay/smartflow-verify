@@ -14,6 +14,7 @@ import { ExportReportModal } from './components/ExportReportModal';
 import { AuthModal } from './components/AuthModal';
 import { CloudWorkflowsModal } from './components/CloudWorkflowsModal';
 import { VerificationAuditView } from './components/VerificationAuditView';
+import { TokenSimulatorView } from './components/TokenSimulatorView';
 import { AuthProvider } from './contexts/AuthContext';
 
 function MainApp() {
@@ -240,20 +241,15 @@ function MainApp() {
               }}
             />
           ) : activeTab === 'simulator' ? (
-            <div className="flex-1 relative flex flex-col">
-              <div className="flex-1">
-                <WorkflowCanvas
-                  workflow={workflow}
-                  onUpdateWorkflow={setWorkflow}
-                  selectedStateId={selectedStateId}
-                  onSelectState={setSelectedStateId}
-                  selectedTransitionId={selectedTransitionId}
-                  onSelectTransition={setSelectedTransitionId}
-                  verificationResult={verificationResult}
-                  simulatingStateId={simulatingStateId}
-                />
-              </div>
-            </div>
+            <TokenSimulatorView
+              workflow={workflow}
+              onUpdateWorkflow={setWorkflow}
+              verificationResult={verificationResult}
+              simulatingStateId={simulatingStateId}
+              onSimulateStateChange={setSimulatingStateId}
+              simulationHistory={simulationHistory}
+              onStepHistoryChange={setSimulationHistory}
+            />
           ) : (
             <InvariantManager
               workflow={workflow}
@@ -265,8 +261,8 @@ function MainApp() {
             />
           )}
 
-          {/* Bottom Simulation Dock (Shown in Canvas, Verification, and Simulator tabs) */}
-          {(activeTab === 'canvas' || activeTab === 'verification' || activeTab === 'simulator') && (
+          {/* Bottom Simulation Dock (Shown only in Canvas view) */}
+          {activeTab === 'canvas' && (
             <SimulationDock
               workflow={workflow}
               simulatingStateId={simulatingStateId}
@@ -278,24 +274,26 @@ function MainApp() {
           )}
         </div>
 
-        {/* Right Verification & Inspector Panel */}
-        <VerificationPanel
-          workflow={workflow}
-          onUpdateWorkflow={setWorkflow}
-          verificationResult={verificationResult}
-          selectedStateId={selectedStateId}
-          onSelectState={(id) => {
-            setSelectedStateId(id);
-            if (id) setSelectedTransitionId(null);
-          }}
-          selectedTransitionId={selectedTransitionId}
-          onSelectTransition={(id) => {
-            setSelectedTransitionId(id);
-            if (id) setSelectedStateId(null);
-          }}
-          onLoadCounterExample={handleLoadCounterExample}
-          onAutoRepair={handleAutoRepair}
-        />
+        {/* Right Verification & Inspector Panel (Shown in Canvas mode) */}
+        {activeTab === 'canvas' && (
+          <VerificationPanel
+            workflow={workflow}
+            onUpdateWorkflow={setWorkflow}
+            verificationResult={verificationResult}
+            selectedStateId={selectedStateId}
+            onSelectState={(id) => {
+              setSelectedStateId(id);
+              if (id) setSelectedTransitionId(null);
+            }}
+            selectedTransitionId={selectedTransitionId}
+            onSelectTransition={(id) => {
+              setSelectedTransitionId(id);
+              if (id) setSelectedStateId(null);
+            }}
+            onLoadCounterExample={handleLoadCounterExample}
+            onAutoRepair={handleAutoRepair}
+          />
+        )}
       </div>
 
       {/* AI Assistant Modal */}
