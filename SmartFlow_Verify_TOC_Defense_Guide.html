@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SmartFlow Verify - Theory of Computation (TOC) Defense Guide</title>
+<style>
+  @page {
+    size: A4;
+    margin: 20mm 15mm 20mm 15mm;
+  }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #1e293b;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    font-size: 11pt;
+  }
+  .header {
+    text-align: center;
+    border-bottom: 3px solid #4f46e5;
+    padding-bottom: 12px;
+    margin-bottom: 24px;
+  }
+  h1 {
+    color: #1e1b4b;
+    font-size: 20pt;
+    margin: 0 0 6px 0;
+    letter-spacing: -0.5px;
+  }
+  .subtitle {
+    color: #4f46e5;
+    font-size: 13pt;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .authors {
+    font-size: 10pt;
+    color: #64748b;
+    margin: 4px 0;
+  }
+  .badge {
+    display: inline-block;
+    background-color: #e0e7ff;
+    color: #3730a3;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 9pt;
+    font-weight: 600;
+    margin-top: 6px;
+  }
+  h2 {
+    color: #1e1b4b;
+    font-size: 14pt;
+    border-left: 4px solid #4f46e5;
+    padding-left: 10px;
+    margin-top: 24px;
+    margin-bottom: 10px;
+    page-break-after: avoid;
+  }
+  h3 {
+    color: #312e81;
+    font-size: 12pt;
+    margin-top: 16px;
+    margin-bottom: 6px;
+    page-break-after: avoid;
+  }
+  p {
+    margin: 6px 0 10px 0;
+  }
+  ul, ol {
+    margin: 6px 0 12px 20px;
+    padding: 0;
+  }
+  li {
+    margin-bottom: 5px;
+  }
+  .box {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 12px 0;
+    page-break-inside: avoid;
+  }
+  .box-primary {
+    background: #eef2ff;
+    border-color: #c7d2fe;
+  }
+  .box-success {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 10pt;
+    page-break-inside: avoid;
+  }
+  th, td {
+    border: 1px solid #cbd5e1;
+    padding: 8px 10px;
+    text-align: left;
+  }
+  th {
+    background: #f1f5f9;
+    color: #0f172a;
+    font-weight: 600;
+  }
+  tr:nth-child(even) {
+    background: #f8fafc;
+  }
+  .formula {
+    font-family: 'Consolas', 'Courier New', monospace;
+    background: #1e293b;
+    color: #38bdf8;
+    padding: 8px 14px;
+    border-radius: 6px;
+    display: inline-block;
+    font-size: 11pt;
+    margin: 6px 0;
+  }
+  .page-break {
+    page-break-before: always;
+  }
+  .qa-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #6366f1;
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    page-break-inside: avoid;
+  }
+  .qa-q {
+    font-weight: 700;
+    color: #1e1b4b;
+    margin-bottom: 4px;
+  }
+  .qa-a {
+    color: #334155;
+    font-size: 10pt;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>SmartFlow Verify</h1>
+  <div class="subtitle">TOC Case Study Defense & Project Guide (Easy Language)</div>
+  <div class="authors">
+    <strong>Authors:</strong> Tanmay Kapoor (24BIT0079) &nbsp;|&nbsp; Chinmay Agrawal (24BIT0453)
+  </div>
+  <div class="badge">Theory of Computation (TOC) &bull; Finite State Automata &bull; Formal Methods</div>
+</div>
+
+<h2>1. Simple Project Summary (What is SmartFlow Verify?)</h2>
+<p>
+  <strong>SmartFlow Verify</strong> is a software platform that converts business processes (like banking loan approvals, healthcare claims, or employee leave management) into mathematical <strong>Finite State Machines (FSMs)</strong>.
+</p>
+<p>
+  Instead of guessing whether a business workflow has hidden bugs, our system automatically runs <strong>graph algorithms (BFS/DFS)</strong> to mathematically prove:
+</p>
+<ul>
+  <li><strong>No Deadlocks:</strong> Processes never get permanently stuck in a trap state.</li>
+  <li><strong>100% Reachability:</strong> There are no unused (dead) states.</li>
+  <li><strong>Determinism:</strong> For any user action, the system always knows exactly which next state to transition to.</li>
+  <li><strong>1-Click Auto-Repair:</strong> Automatically creates missing transitions to fix broken workflows.</li>
+</ul>
+
+<div class="box box-primary">
+  <strong>Key Takeaway for Faculty:</strong> "We use Theoretical Computer Science (Finite Automata & Graph Theory) to guarantee 100% correctness of business logic before it is deployed into production."
+</div>
+
+<h2>2. How SmartFlow Verify Directly Connects to TOC (Theory of Computation)</h2>
+
+<h3>A. The Formal 5-Tuple Definition of a Deterministic Finite Automaton (DFA)</h3>
+<p>In Theory of Computation, every Finite State Machine is defined by the mathematical 5-tuple:</p>
+
+<div style="text-align:center;">
+  <div class="formula">M = ⟨ Q, Σ, δ, q₀, F ⟩</div>
+</div>
+
+<p>Here is how our project implements each of these 5 parts in simple terms:</p>
+<table>
+  <tr>
+    <th style="width:20%;">TOC Symbol</th>
+    <th style="width:35%;">Mathematical Definition</th>
+    <th style="width:45%;">SmartFlow Verify Implementation</th>
+  </tr>
+  <tr>
+    <td><strong>Q (States)</strong></td>
+    <td>Finite set of all states in the system</td>
+    <td>Every step in the workflow (e.g. <code>Application_Submitted</code>, <code>Manual_Review</code>).</td>
+  </tr>
+  <tr>
+    <td><strong>Σ (Alphabet)</strong></td>
+    <td>Set of all input symbols (events)</td>
+    <td>All user triggers and actions (e.g. <code>submit_docs</code>, <code>manager_approve</code>).</td>
+  </tr>
+  <tr>
+    <td><strong>δ (Transition Function)</strong></td>
+    <td>Mapping: <code>δ: Q × Σ → Q</code></td>
+    <td>The arrows connecting states with boolean guards (e.g. <code>[creditScore &gt;= 700]</code>).</td>
+  </tr>
+  <tr>
+    <td><strong>q₀ (Initial State)</strong></td>
+    <td>The unique start state (<code>q₀ ∈ Q</code>)</td>
+    <td>The entry node where a new application starts (e.g. <code>Application_Submitted</code>).</td>
+  </tr>
+  <tr>
+    <td><strong>F (Final / Accepting States)</strong></td>
+    <td>Subset of terminal states (<code>F ⊆ Q</code>)</td>
+    <td>The final outcome nodes (e.g. <code>Disbursed & Active</code> or <code>Application_Rejected</code>).</td>
+  </tr>
+</table>
+
+<div class="page-break"></div>
+
+<h3>B. Language Recognition & String Acceptance: L(M)</h3>
+<ul>
+  <li><strong>Accepted Language <code>L(M)</code>:</strong> A sequence of operations <code>w = σ₁ σ₂ ... σₖ</code> is accepted if starting from <code>q₀</code>, following the transitions reaches an accepting final state <code>q_final ∈ F</code>.</li>
+  <li><strong>Rejected String:</strong> If an action leads to a deadlock state or an invalid branch, the string is rejected (the transaction failed).</li>
+</ul>
+
+<h3>C. Formal Algorithms Implemented in Code</h3>
+<table>
+  <tr>
+    <th>TOC Problem</th>
+    <th>Algorithm Used</th>
+    <th>Time Complexity</th>
+    <th>Why It Matters</th>
+  </tr>
+  <tr>
+    <td><strong>Unreachable State Detection</strong></td>
+    <td>Forward Breadth-First Search (BFS) starting from <code>q₀</code></td>
+    <td><code>O(|V| + |E|)</code></td>
+    <td>Finds orphaned states that no user can ever reach.</td>
+  </tr>
+  <tr>
+    <td><strong>Deadlock / Trap State Detection</strong></td>
+    <td>Sink state detection & Reverse BFS from final states <code>F</code></td>
+    <td><code>O(|V| + |E|)</code></td>
+    <td>Finds states with <code>out_degree = 0</code> that are not in <code>F</code> (stranded items).</td>
+  </tr>
+  <tr>
+    <td><strong>Determinism Verification</strong></td>
+    <td>Alphabet conflict checking: <code>|δ(q, σ)| ≤ 1</code></td>
+    <td><code>O(|Q| × |Σ|)</code></td>
+    <td>Guarantees system is a DFA with zero conflicting paths.</td>
+  </tr>
+  <tr>
+    <td><strong>Transition Function Table</strong></td>
+    <td>Cartesian Product Matrix: <code>Q × Σ</code></td>
+    <td><code>O(|Q| × |Σ|)</code></td>
+    <td>Displayed under <strong>State Matrix (δ)</strong> tab in UI.</td>
+  </tr>
+</table>
+
+<h2>3. Verification Against Your Case Study Report (100% Match)</h2>
+<p>Our implementation directly implements all 5 objectives stated in your report:</p>
+<ol>
+  <li><strong>Design business workflows using FSMs:</strong> Interactive drag-and-drop canvas with automatic topological auto-layout.</li>
+  <li><strong>Automatically verify workflow:</strong> Real-time formal verification engine checking deadlocks, unreachables, determinism, and SLAs.</li>
+  <li><strong>Suggest correction for detected errors:</strong> Automated rule-based synthesis that fixes deadlocks with 1-click Auto-Repair.</li>
+  <li><strong>Provide step-by-step workflow simulation:</strong> Interactive Token Simulator with speed controls (0.5x, 1x, 2x) and execution trace history.</li>
+  <li><strong>Cloud Persistence & User Data:</strong> Real-time sync with Google Cloud Firestore and Firebase Authentication.</li>
+</ol>
+
+<div class="page-break"></div>
+
+<h2>4. Tab-by-Tab Explanation for Faculty Presentation</h2>
+
+<div class="box box-success">
+  <strong>1. FSM Graph Tab (Canvas):</strong>
+  Visualizes the directed graph with color-coded nodes (Initial, Review, Gateway, Terminal). Displays transition arrows with trigger events and conditional boolean guards.
+</div>
+
+<div class="box box-success">
+  <strong>2. Verification Audit Tab (Formal Dashboard):</strong>
+  Shows the mathematical <strong>Reliability Score (0-100)</strong>, lists detected defects, displays the exact <strong>Counter-Example Trace</strong> leading to failures, and provides a 1-click <strong>Auto-Repair</strong> button.
+</div>
+
+<div class="box box-success">
+  <strong>3. State Matrix (δ) Tab:</strong>
+  Displays the formal transition function table <code>δ(q, σ)</code> mapping all state-event pairs, exactly as taught in Theory of Computation textbooks.
+</div>
+
+<div class="box box-success">
+  <strong>4. Token Simulator Tab (Execution Engine):</strong>
+  Allows step-by-step token execution. Includes a <strong>Live Guard & Context Payload Editor</strong> where modifying variables (e.g. <code>creditScore</code>) dynamically evaluates guards into <strong>GUARD PASS (Green)</strong> or <strong>BLOCKED (Red)</strong>. Also includes a <strong>1,000-Run Monte Carlo Stress Tester</strong> for statistical SLA calculations.
+</div>
+
+<div class="box box-success">
+  <strong>5. Cloud Library & Export:</strong>
+  Saves workflow models to Google Cloud Firestore with Firebase Auth. Exports verified FSMs to <strong>Temporal.io (TypeScript)</strong>, <strong>AWS Step Functions (ASL JSON)</strong>, and <strong>XState v5</strong>.
+</div>
+
+<h2>5. Likely Faculty Viva Questions & Exact Answers</h2>
+
+<div class="qa-card">
+  <div class="qa-q">Q1: How is your project related to Theory of Computation?</div>
+  <div class="qa-a"><strong>Answer:</strong> "Our project models business logic as a formal Deterministic Finite Automaton (DFA) defined by the 5-tuple M = ⟨Q, Σ, δ, q₀, F⟩. We apply graph traversal algorithms (BFS/DFS) on the transition graph to check language acceptance L(M), detect unreachable states, and eliminate deadlock sink states."</div>
+</div>
+
+<div class="qa-card">
+  <div class="qa-q">Q2: How do you mathematically detect a deadlock?</div>
+  <div class="qa-a"><strong>Answer:</strong> "A deadlock occurs when a state q is reachable from q₀, but has an out-degree of 0 (no outgoing transitions) and is not a member of the final accepting states set F. In automata theory, this is known as a dead state or trap state."</div>
+</div>
+
+<div class="qa-card">
+  <div class="qa-q">Q3: What is the time complexity of your verification algorithms?</div>
+  <div class="qa-a"><strong>Answer:</strong> "Reachability and deadlock analysis run in O(|V| + |E|) time, where |V| is the number of states and |E| is the number of transitions. This is significantly faster and more scalable than Petri-Net reachability graphs which suffer from state space explosion (exponential complexity)."</div>
+</div>
+
+<div class="qa-card">
+  <div class="qa-q">Q4: How does the Auto-Repair feature work?</div>
+  <div class="qa-a"><strong>Answer:</strong> "When a deadlock state is detected, the synthesis engine automatically generates a fallback transition from the stranded state to an absorbing terminal rejection state with an investigation timeout guard, restoring formal liveness to the FSM."</div>
+</div>
+
+</body>
+</html>
