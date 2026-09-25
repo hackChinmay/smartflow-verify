@@ -14,9 +14,12 @@ import {
   Wand2,
   Plus,
   ChevronDown,
+  Cloud,
+  User as UserIcon,
 } from 'lucide-react';
 import { FSMWorkflow, VerificationResult } from '../types/fsm';
 import { WORKFLOW_TEMPLATES } from '../data/workflowTemplates';
+import { useAuth } from '../contexts/AuthContext';
 
 interface NavbarProps {
   currentWorkflow: FSMWorkflow;
@@ -30,6 +33,8 @@ interface NavbarProps {
   onAutoLayout: () => void;
   activeTab: 'canvas' | 'verification' | 'matrix' | 'simulator' | 'invariants';
   setActiveTab: (tab: 'canvas' | 'verification' | 'matrix' | 'simulator' | 'invariants') => void;
+  onOpenCloudModal: () => void;
+  onOpenAuthModal: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -44,6 +49,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onAutoLayout,
   activeTab,
   setActiveTab,
+  onOpenCloudModal,
+  onOpenAuthModal,
 }) => {
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
@@ -294,15 +301,38 @@ export const Navbar: React.FC<NavbarProps> = ({
           <Download className="w-4 h-4" />
         </button>
 
-        {/* Auto Layout */}
+        {/* Cloud Workflows */}
         <button
-          onClick={onAutoLayout}
-          title="Hierarchical Topological Auto-Layout"
-          className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 rounded-lg transition cursor-pointer"
+          onClick={onOpenCloudModal}
+          title="Saved Cloud Workflows"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 hover:text-white border border-cyan-500/30 rounded-lg text-xs font-medium transition cursor-pointer"
         >
-          <RotateCcw className="w-4 h-4" />
+          <Cloud className="w-3.5 h-3.5 text-cyan-400" />
+          <span>Cloud Library</span>
         </button>
+
+        {/* User Profile / Auth */}
+        <UserNavButton onOpenAuthModal={onOpenAuthModal} />
       </div>
     </header>
+  );
+};
+
+const UserNavButton: React.FC<{ onOpenAuthModal: () => void }> = ({ onOpenAuthModal }) => {
+  const { user } = useAuth();
+  return (
+    <button
+      onClick={onOpenAuthModal}
+      className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition cursor-pointer ${
+        user
+          ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/20'
+          : 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white'
+      }`}
+    >
+      <UserIcon className="w-3.5 h-3.5" />
+      <span className="max-w-[100px] truncate">
+        {user ? user.email?.split('@')[0] || 'Account' : 'Sign In'}
+      </span>
+    </button>
   );
 };
